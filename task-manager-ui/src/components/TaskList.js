@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect  } from "react";
 import TaskCard from "./TaskCard";
 import TaskInput from "./TaskInput";
 import { IoAddCircleOutline } from "react-icons/io5";
@@ -7,34 +7,18 @@ import Tab from "@mui/material/Tab";
 import TabContext from "@mui/lab/TabContext";
 import TabList from "@mui/lab/TabList";
 import TabPanel from "@mui/lab/TabPanel";
+import { GridLoader } from "react-spinners";
 
 export default function TaskList() {
-	const [taskList, setTaskList] = useState([
-		{
-			id: 1,
-			name: "my task1",
-			description: "this is my task",
-			status: "pending",
-			dueDate: "2024-06-30",
-		},
-		{
-			id: 2,
-			name: "my task2",
-			description: "this is my task",
-			status: "pending",
-			dueDate: "2024-06-30",
-		},
-		{
-			id: 3,
-			name: "my task3",
-			description: "this is my task",
-			status: "pending",
-			dueDate: "2024-06-30",
-		},
-	]);
+	const [taskList, setTaskList] = useState([]);
 	const [open, setOpen] = useState(false);
 	const [tabValue, setTabValue] = React.useState("all");
-
+  const [loading, setLoading] = useState(true);
+  const override = {
+    display: "block",
+    margin: "0 auto",
+    borderColor:"#0328fa",
+  };
   const tasks = taskList.filter((task) => {
     switch (tabValue) {
 			case "pending":
@@ -50,6 +34,18 @@ export default function TaskList() {
 		}
   });
 
+  useEffect(() => {
+    fetch("https://localhost:7131/api/task/all")
+      .then((response) => response.json())
+      .then((data) => {
+        setTaskList(data);
+        setLoading(false);
+      })
+      .catch((error) => {
+        console.error("Error fetching tasks:", error);
+        setLoading(false);
+      });
+  }, []);
 
 	const handleOpen = () => setOpen(true);
 	const handleClose = () => setOpen(false);
@@ -94,7 +90,7 @@ export default function TaskList() {
 	};
 
 	return (
-		<>
+		!loading ? <>
 			<Box sx={{ width: "100%", typography: "body1" }}>
 				<TabContext value={tabValue}>
 					<Box sx={{ borderBottom: 1, borderColor: "divider" }}>
@@ -136,6 +132,13 @@ export default function TaskList() {
 					</div>
 				</div>
 			</div>
-		</>
+		</> : <GridLoader
+        color="#0328fa"
+        loading={loading}
+        cssOverride={override}
+        size={20}
+        aria-label="Loading Spinner"
+        data-testid="loader"
+      />
 	);
 }
