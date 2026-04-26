@@ -5,37 +5,30 @@ import {
   DialogTitle,
   DialogContent,
   TextField,
-  DialogActions
+  DialogActions,
+  InputLabel,
+  Select,
+  MenuItem
 } from "@mui/material";
 
-export default function TaskInput({open, id, setHandleClose, handleAdd}) {
-    const [taskName, setTaskName] = useState("");
-    const [description, setDescription] = useState("");
-    const [dueDate, setDueDate] = useState("");
-    var canSubmit = taskName && description && dueDate;
-
-    const handleAddTask = ()=>{
-        console.log(taskName, description, dueDate, id);
-        var task = {
-            id:id,
-            name: taskName,
-            description: description,
-            status: "pending",
-            dueDate: dueDate
+export default function TaskInput({open, currTask, setHandleClose, handleUpdate}) {
+    const [task, setTask] = useState(currTask);
+    var canSubmit = task.name && task.description && task.dueDate && task.status;
+    const handleUpdateTask = ()=>{
+        var updatedTask = {
+            id:task.id,
+            name: task.name,
+            description: task.description,
+            status: task.status,
+            dueDate: task.dueDate
         }
-        handleAdd(task);
+        handleUpdate(updatedTask);
         handleClose();
         // console.log(props.handlAdd);
     }
 
-    const resetForm = () =>{
-        setTaskName("");
-        setDescription("");
-        setDueDate("");
-    }
-
     const handleClose = () => {
-        resetForm();
+        // resetForm();
         setHandleClose(false);
     }
   return (
@@ -47,31 +40,43 @@ export default function TaskInput({open, id, setHandleClose, handleAdd}) {
                 label="Task Name"
                 fullWidth
                 margin="dense"
-                value={taskName}
-                onChange={(e) => setTaskName(e.target.value)}
+                value={task.name}
+                onChange={(e) => setTask({...task, name: e.target.value})}
             />
             <TextField
                 label="Description"
                 fullWidth
                 margin="dense"
-                value={description}
-                onChange={(e) => setDescription(e.target.value)}
+                value={task.description}
+                onChange={(e) => setTask({...task, description: e.target.value})}
             />
             <TextField
                 type="date"
                 fullWidth
                 margin="dense"
-                InputLabelProps={{ shrink: true }}
-                value={dueDate}
-                onChange={(e) => setDueDate(e.target.value)}
+                value={task.dueDate}
+                onChange={(e) => setTask({...task, dueDate: e.target.value})}
             />
+
+            <InputLabel id="demo-simple-select-label">Status</InputLabel>
+                <Select
+                    labelId="demo-simple-select-label"
+                    id="demo-simple-select"
+                    value={task.status}
+                    label="Status"
+                    onChange={(e) => setTask({...task, status: e.target.value})}
+                >
+                    <MenuItem value="completed">Completed</MenuItem>
+                    <MenuItem value="in-progress">In Progress</MenuItem>
+                    <MenuItem value="pending">Pending</MenuItem>
+                </Select>
             </DialogContent>
 
             <DialogActions>
-            <Button onClick={handleClose}>Cancel</Button>
-            <Button onClick={handleAddTask} variant="contained">
-                Save
-            </Button>
+                <Button onClick={handleClose}>Cancel</Button>
+                <Button disabled={!canSubmit} onClick={handleUpdateTask} variant="contained">
+                    Save
+                </Button>
             </DialogActions>
         </Dialog>
   )

@@ -6,10 +6,27 @@
 }
 
 .task-card-header{
+  display: flex;
+  position: relative;
   background-color: #0328fa;
   color: white;
-  padding: 10px;
-  text-align: center;
+  height: 5vh;
+  align-items: center ;
+  font-weight: 700;
+  padding: 4px;
+}
+
+.task-card-header-name{
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  margin-bottom: 5px;
+}
+
+.task-card-header-icons{
+  margin-left: auto;
+  display: flex;
+  gap: 10px;
   font-weight: 700;
 }
 
@@ -28,7 +45,8 @@
 }
 
 /* .delayed-task{
-  border: 2px solid red;
+  border-bottom: 2px solid red;
+  border-right: 2px solid red;
 } */
 
 .task-list{
