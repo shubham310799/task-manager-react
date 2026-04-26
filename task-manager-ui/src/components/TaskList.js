@@ -115,6 +115,7 @@ export default function TaskList() {
 				currTask={newTask}
 				setHandleClose={setOpen}
 				handleUpdate={HandleUpdateTaskList}
+				isEdit={false}
 			></TaskInput>
 			<div className="task-list">
 				{tasks.length > 0 &&

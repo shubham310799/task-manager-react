@@ -11,7 +11,7 @@ import {
   MenuItem
 } from "@mui/material";
 
-export default function TaskInput({open, currTask, setHandleClose, handleUpdate}) {
+export default function TaskInput({open, currTask, setHandleClose, handleUpdate, isEdit}) {
     const [task, setTask] = useState(currTask);
     var canSubmit = task.name && task.description && task.dueDate && task.status;
     const handleUpdateTask = ()=>{
@@ -28,9 +28,18 @@ export default function TaskInput({open, currTask, setHandleClose, handleUpdate}
     }
 
     const handleClose = () => {
-        // resetForm();
+        resetForm();
         setHandleClose(false);
     }
+
+    const resetForm = () => {
+        !isEdit && setTask({
+            name: "",
+            description: "",
+            status: "pending",
+            dueDate: ""
+        });
+    };
   return (
     <Dialog open={open} onClose={handleClose}>
             <DialogTitle>Add Task</DialogTitle>

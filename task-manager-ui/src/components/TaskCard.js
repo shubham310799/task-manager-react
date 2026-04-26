@@ -32,7 +32,7 @@ export default function TaskCard(props) {
             </div>
         </div>
         
-        <TaskInput open={open} currTask={props.task} setHandleClose={setOpen} handleUpdate={updateTaskList}></TaskInput>
+        <TaskInput open={open} currTask={props.task} setHandleClose={setOpen} handleUpdate={updateTaskList} isEdit={true}></TaskInput>
     </>
   )
 }
