@@ -1,0 +1,30 @@
+version: "3.8"
+
+services:
+  sqlserver:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+
+    environment:
+      ACCEPT_EULA: "Y"
+      SA_PASSWORD: "Passw0rd123"
+
+    ports:
+      - target: 1433
+        published: 1433
+        protocol: tcp
+        mode: host
+
+    volumes:
+      - mssql_data:/var/opt/mssql
+
+    deploy:
+      replicas: 1
+      restart_policy:
+        condition: on-failure
+      placement:
+        constraints:
+          - node.role == manager # optional: keep DB on a specific node
+
+volumes:
+  mssql_data:
+    driver: local

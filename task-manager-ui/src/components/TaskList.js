@@ -1,4 +1,4 @@
-import React, { useState, useEffect  } from "react";
+import React, { useState, useEffect } from "react";
 import TaskCard from "./TaskCard";
 import TaskInput from "./TaskInput";
 import { IoAddCircleOutline } from "react-icons/io5";
@@ -13,39 +13,44 @@ export default function TaskList() {
 	const [taskList, setTaskList] = useState([]);
 	const [open, setOpen] = useState(false);
 	const [tabValue, setTabValue] = React.useState("all");
-  const [loading, setLoading] = useState(true);
-  const override = {
-    display: "block",
-    margin: "0 auto",
-    borderColor:"#0328fa",
-  };
-  const tasks = taskList.filter((task) => {
-    switch (tabValue) {
+	const [loading, setLoading] = useState(true);
+	const [editId, setEditId] = useState(null);
+	const [isEdit, setIsEdit] = useState(false);
+	const override = {
+		display: "block",
+		margin: "0 auto",
+		borderColor: "#0328fa",
+	};
+	const tasks = taskList.filter((task) => {
+		switch (tabValue) {
 			case "pending":
 			case "in-progress":
 			case "completed":
 				return task.status === tabValue;
 				break;
 			case "delayed":
-				return task.dueDate < new Date().toISOString().split("T")[0] && task.status !== "completed";
+				return (
+					task.dueDate < new Date().toISOString().split("T")[0] &&
+					task.status !== "completed"
+				);
 				break;
 			default:
 				return true;
 		}
-  });
+	});
 
-  useEffect(() => {
-    fetch("https://localhost:7131/api/task/all")
-      .then((response) => response.json())
-      .then((data) => {
-        setTaskList(data);
-        setLoading(false);
-      })
-      .catch((error) => {
-        console.error("Error fetching tasks:", error);
-        setLoading(false);
-      });
-  }, []);
+	useEffect(() => {
+		fetch("https://localhost:7131/api/task/all")
+			.then((response) => response.json())
+			.then((data) => {
+				setTaskList(data);
+				setLoading(false);
+			})
+			.catch((error) => {
+				console.error("Error fetching tasks:", error);
+				setLoading(false);
+			});
+	}, []);
 
 	const handleOpen = () => setOpen(true);
 	const handleClose = () => setOpen(false);
@@ -55,19 +60,40 @@ export default function TaskList() {
 	};
 
 	const HandleUpdateTaskList = (data) => {
-		var updated = [];
+		var updated = taskList;
 		if (taskList.find((task) => task.id === data.id)) {
-			updated = taskList.map((task) => (task.id === data.id ? data : task));
+      setIsEdit(true);
+      setEditId(data.id);
+			setTaskList(taskList.map((task) => (task.id === data.id ? data : task)));
 		} else {
-			updated = [...taskList, data];
+      setIsEdit(true);
+			fetch("https://localhost:7131/api/task/add", {
+				method: "POST",
+				headers: {
+					"Content-Type": "application/json",
+				},
+				body: JSON.stringify(data),
+			})
+				.then((response) => response.json())
+				.then((data) => setTaskList(data))
+				.catch((error) => console.error("Error:", error));
 		}
-		setTaskList(updated);
+    setIsEdit(false);
+    setEditId(null);
 	};
 
 	const handleDeleteTask = (id) => {
-		var updated = taskList.filter((task) => task.id !== id);
-		setTaskList(updated);
-    handleTabChange(null, tabValue);
+    setIsEdit(true);
+    setEditId(id);
+		fetch(`https://localhost:7131/api/task/${id}`, {
+			method: "DELETE",
+		})
+			.then((response) => response.json())
+			.then((data) => setTaskList(data))
+			.catch((error) => console.error("Error:", error));
+
+    setIsEdit(false);
+    setEditId(null);
 	};
 
 	const handleTabChange = (event, newValue) => {
@@ -89,8 +115,8 @@ export default function TaskList() {
 		status: "pending",
 	};
 
-	return (
-		!loading ? <>
+	return !loading ? (
+		<>
 			<Box sx={{ width: "100%", typography: "body1" }}>
 				<TabContext value={tabValue}>
 					<Box sx={{ borderBottom: 1, borderColor: "divider" }}>
@@ -116,7 +142,7 @@ export default function TaskList() {
 			<div className="task-list">
 				{tasks.length > 0 &&
 					tasks.map((task) => {
-						return (
+						return !(isEdit && editId == task.id) ? (
 							<TaskCard
 								task={task}
 								key={task.id}
@@ -124,6 +150,15 @@ export default function TaskList() {
 								updateTaskList={HandleUpdateTaskList}
 								isEdit={false}
 							></TaskCard>
+						) : (
+							<GridLoader
+								color="#0328fa"
+								loading={loading}
+								cssOverride={override}
+								size={20}
+								aria-label="Loading Spinner"
+								data-testid="loader"
+							/>
 						);
 					})}
 				<div>
@@ -132,13 +167,15 @@ export default function TaskList() {
 					</div>
 				</div>
 			</div>
-		</> : <GridLoader
-        color="#0328fa"
-        loading={loading}
-        cssOverride={override}
-        size={20}
-        aria-label="Loading Spinner"
-        data-testid="loader"
-      />
+		</>
+	) : (
+		<GridLoader
+			color="#0328fa"
+			loading={loading}
+			cssOverride={override}
+			size={20}
+			aria-label="Loading Spinner"
+			data-testid="loader"
+		/>
 	);
 }
