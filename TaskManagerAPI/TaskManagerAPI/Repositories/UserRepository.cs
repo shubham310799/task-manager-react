@@ -18,7 +18,7 @@ namespace TaskManagerAPI.Repositories
         {
             try
             {
-                _dbContext.Users.Add(user);
+                _dbContext.User.Add(user);
                 return true;
             }
             catch (Exception ex)
@@ -32,7 +32,7 @@ namespace TaskManagerAPI.Repositories
         {
             try
             {
-                return _dbContext.Users.FirstOrDefault(u => u.Email == email);
+                return _dbContext.User.FirstOrDefault(u => u.Email == email);
             }
             catch (Exception ex)
             {

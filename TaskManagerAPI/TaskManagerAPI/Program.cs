@@ -1,9 +1,14 @@
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
+using System.Text;
 using TaskManagerAPI.Data;
+using TaskManagerAPI.Extensions;
 
 var builder = WebApplication.CreateBuilder(args);
 var MyAllowSpecificOrigins = "_myAllowSpecificOrigins";
-// Add services to the container.
+
+
 
 builder.Services.AddCors(options =>
 {
@@ -25,6 +30,9 @@ builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+builder.Services.AddServices();
+builder.Services.AddRepositories();
+builder.Services.AddHttpContextAccessor();
 
 var app = builder.Build();
 

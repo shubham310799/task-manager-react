@@ -6,7 +6,7 @@
         public Error? Error { get; set; }
         public bool Success
         {
-            get => Error != null;
+            get => Error == null;
         }
     }
 
