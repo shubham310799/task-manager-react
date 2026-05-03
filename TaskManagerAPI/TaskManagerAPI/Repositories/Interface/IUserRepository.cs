@@ -8,5 +8,6 @@ namespace TaskManagerAPI.Repositories.Interface
         Task<bool> AddUser(User user);
 
         Task<User?> GetUserByEmail(string email);
+        Task<User?> GetUserById(int userId);
     }
 }

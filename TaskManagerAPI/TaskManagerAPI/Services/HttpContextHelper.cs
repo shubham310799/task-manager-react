@@ -10,14 +10,9 @@ namespace TaskManagerAPI.Services
             _httpContextAccessor = httpContextAccessor;
         }
 
-        public async Task<int> GetUserId()
+        public async Task<string?> GetUserId()
         {
-            object userIdObj = null;
-            if(_httpContextAccessor?.HttpContext?.Items.TryGetValue("UserId", out userIdObj) == true)
-            {
-                return Int32.TryParse(userIdObj?.ToString(), out var userId) ? userId : 0;
-            }
-            return 0;
+            return _httpContextAccessor?.HttpContext?.User?.FindFirst("UserId")?.Value;
         }
     }
 }

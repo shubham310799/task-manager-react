@@ -23,6 +23,35 @@ namespace TaskManagerAPI.Services
             _tokenService = tokenService;
         }
 
+        public async Task<GlobalResponseDto<User>> GetUserById(string userId)
+        {
+            var res = new GlobalResponseDto<User>();
+            try
+            {
+                if (Int32.TryParse(userId, out var id))
+                {
+                    var user = await _userRepository.GetUserById(id);
+                    if (user == null)
+                    {
+                        res.Error = ErrorCodes.UserNotFoundError;
+                        return res;
+                    }
+                    res.Data = user;
+                }
+                else
+                {
+                    res.Error = ErrorCodes.SomethingWentWrong;
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error occurred while fetching user by email.");
+                res.Error = ErrorCodes.SomethingWentWrong;
+            }
+
+            return res;
+        }
+
         public async Task<GlobalResponseDto<string>> RegisterUser(RegisterUserDto user)
         {
             var res = new GlobalResponseDto<string>();

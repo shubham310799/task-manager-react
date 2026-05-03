@@ -1,40 +1,53 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+using System.Threading.Tasks;
 using TaskManagerAPI.DTO;
+using TaskManagerAPI.Services.Interface;
 
 namespace TaskManagerAPI.Controllers
 {
     [ApiController]
     [Route("api/task")]
+    [Authorize]
     public class TaskController : ControllerBase
     {
-        static readonly List<TaskModel> tasks = new List<TaskModel>();
+        private readonly IHttpContextHelper _httpContextHelper;
+        private readonly IUserTaskService _userTaskService;
+        public TaskController(IHttpContextHelper httpContextHelper, IUserTaskService userTaskService)
+        {
+            _httpContextHelper = httpContextHelper;
+            _userTaskService = userTaskService;
+        }
 
         [HttpGet("all")]
         public async Task<IActionResult> GetAllTasks()
         {
-            // Logic to retrieve all tasks from the database
-            await Task.Delay(1000);
+            var userId = await _httpContextHelper.GetUserId();
+            var tasks = await _userTaskService.GetUserTask(userId);
             return Ok(tasks);
         }
 
         [HttpPost("add")]
-        public async Task<IActionResult> CreateTask(TaskModel task)
+        public async Task<IActionResult> CreateTask(AddTaskDto task)
         {
-            // Logic to create a new task in the database
-            await Task.Delay(1000);
-            var max = tasks?.Any() == true ? tasks.Max(t => t.Id) + 1 : 1;
-
-            task.Id = max;
-            tasks.Add(task);
+            var userId = await _httpContextHelper.GetUserId();
+            var tasks = await _userTaskService.Addtask(task, userId);
             return Ok(tasks);
         }
 
-        [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteTask(int id)
+        [HttpDelete("{taskId}")]
+        public async Task<IActionResult> DeleteTask(string taskId)
         {
-            var task = tasks.FirstOrDefault(t => t.Id == id);
-            await Task.Delay(1000);
-            if (task != null) tasks.Remove(task);
+            var userId = await _httpContextHelper.GetUserId();
+            var tasks = await _userTaskService.DeleteUserTask(taskId, userId);
+            return Ok(tasks);
+        }
+
+        [HttpPut]
+        public async Task<IActionResult> UpdateTask(UserTaskDto task)
+        {
+            var userId = await _httpContextHelper.GetUserId();
+            var tasks = await _userTaskService.UpdateTask(task, userId);
             return Ok(tasks);
         }
     }

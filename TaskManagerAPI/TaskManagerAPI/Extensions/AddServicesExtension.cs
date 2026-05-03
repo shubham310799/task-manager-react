@@ -15,6 +15,7 @@ namespace TaskManagerAPI.Extensions
         public static IServiceCollection AddServices(this IServiceCollection services)
         {
             services.AddScoped<IUserService, UserService>();
+            services.AddScoped<IUserTaskService, UserTaskService>();
             services.AddScoped<IPasswordHasher<string>, PasswordHasher<string>>();
             services.AddSingleton<ITokenService, TokenService>();
             services.AddScoped<IHttpContextHelper, HttpContextHelper>();
@@ -24,6 +25,7 @@ namespace TaskManagerAPI.Extensions
         public static IServiceCollection AddRepositories(this IServiceCollection services)
         {
             services.AddScoped<IUserRepository, UserRepository>();
+            services.AddScoped<ITaskRepository, TaskRepository>();
             services.AddScoped<IUnitOfWork, UnitOfWork>();
             return services;
         }

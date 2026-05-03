@@ -25,7 +25,13 @@ namespace TaskManagerAPI.Common
         public static Error SomethingWentWrong = new Error
         {
             ErrorCode = "004",
-            Message = "Something went wrng"
+            Message = "Something went wrong"
+        };
+
+        public static Error InvalidTask = new Error
+        {
+            ErrorCode = "005",
+            Message = "Invalid task"
         };
 
     }

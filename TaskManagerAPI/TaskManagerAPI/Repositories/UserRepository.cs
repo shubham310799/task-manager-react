@@ -40,5 +40,18 @@ namespace TaskManagerAPI.Repositories
             }
             return null;
         }
+
+        public async Task<User?> GetUserById(int userId)
+        {
+            try
+            {
+                return _dbContext.User.FirstOrDefault(u => u.UserId == userId);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error retrieving user by email");
+            }
+            return null;
+        }
     }
 }

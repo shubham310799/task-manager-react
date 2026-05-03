@@ -7,5 +7,6 @@ namespace TaskManagerAPI.Services.Interface
     {
         Task<GlobalResponseDto<string>> RegisterUser(RegisterUserDto user);
         Task<GlobalResponseDto<string>> UserLogin(LoginUserDto user);
+        Task<GlobalResponseDto<User>> GetUserById(string _);
     }
 }

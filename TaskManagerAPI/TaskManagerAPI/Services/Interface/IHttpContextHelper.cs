@@ -2,6 +2,6 @@
 {
     public interface IHttpContextHelper
     {
-        Task<int> GetUserId();
+        Task<string?> GetUserId();
     }
 }
