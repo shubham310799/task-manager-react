@@ -8,6 +8,7 @@ import TabContext from "@mui/lab/TabContext";
 import TabList from "@mui/lab/TabList";
 import TabPanel from "@mui/lab/TabPanel";
 import { GridLoader } from "react-spinners";
+import { getTasks, addTask, updateTask, deleteTask } from "../services/TaskService";
 
 export default function TaskList() {
 	const [taskList, setTaskList] = useState([]);
@@ -40,16 +41,17 @@ export default function TaskList() {
 	});
 
 	useEffect(() => {
-		fetch("https://localhost:7131/api/task/all")
-			.then((response) => response.json())
-			.then((data) => {
+		const fetchData = async () => {
+			try {
+				const data = await getTasks();
 				setTaskList(data);
+			} catch (err) {
+				console.error(err);
+			} finally {
 				setLoading(false);
-			})
-			.catch((error) => {
-				console.error("Error fetching tasks:", error);
-				setLoading(false);
-			});
+			}
+		};
+		fetchData();
 	}, []);
 
 	const handleOpen = () => setOpen(true);
@@ -59,41 +61,48 @@ export default function TaskList() {
 		setOpen(false);
 	};
 
-	const HandleUpdateTaskList = (data) => {
+	const HandleUpdateTaskList = async (data) => {
 		var updated = taskList;
-		if (taskList.find((task) => task.id === data.id)) {
-      setIsEdit(true);
-      setEditId(data.id);
-			setTaskList(taskList.map((task) => (task.id === data.id ? data : task)));
-		} else {
-      setIsEdit(true);
-			fetch("https://localhost:7131/api/task/add", {
-				method: "POST",
-				headers: {
-					"Content-Type": "application/json",
-				},
-				body: JSON.stringify(data),
-			})
-				.then((response) => response.json())
-				.then((data) => setTaskList(data))
-				.catch((error) => console.error("Error:", error));
+		setIsEdit(true);
+		setEditId(data.id);
+		try {
+			console.log("data in update task list", data);
+			if (taskList.find((task) => task.id === data.id)) {
+				setIsEdit(true);
+				setEditId(data.id);
+				updated = await updateTask(data);
+			} else {
+				setIsEdit(true);
+				updated = await addTask(data);
+			}
 		}
-    setIsEdit(false);
-    setEditId(null);
+		catch (err) {
+			console.error(err);
+		}
+		finally {
+			setIsEdit(false);
+			setEditId(null);
+			setTaskList(updated);
+		}
+
 	};
 
-	const handleDeleteTask = (id) => {
-    setIsEdit(true);
-    setEditId(id);
-		fetch(`https://localhost:7131/api/task/${id}`, {
-			method: "DELETE",
-		})
-			.then((response) => response.json())
-			.then((data) => setTaskList(data))
-			.catch((error) => console.error("Error:", error));
+	const handleDeleteTask = async (id) => {
+		setIsEdit(true);
+		setEditId(id);
+		try {
+			await deleteTask(id);
+			const updated = taskList.filter((task) => task.id !== id);
+			setTaskList(updated);
+		}
+		catch (err) {
+			console.error(err);
+		}
+		finally {
 
-    setIsEdit(false);
-    setEditId(null);
+			setIsEdit(false);
+			setEditId(null);
+		}
 	};
 
 	const handleTabChange = (event, newValue) => {
@@ -103,17 +112,19 @@ export default function TaskList() {
 	var max =
 		tasks.length > 0
 			? tasks.reduce((prev, curr) => {
-					return curr.id > prev.id ? curr : prev;
-				})
+				return curr.id > prev.id ? curr : prev;
+			})
 			: { id: 0 };
 
 	const newTask = {
-		id: max.id + 1,
+		id: null,
 		name: "",
 		description: "",
 		dueDate: "",
 		status: "pending",
 	};
+
+	console.log("******this is test log*******");
 
 	return !loading ? (
 		<>
@@ -142,6 +153,9 @@ export default function TaskList() {
 			<div className="task-list">
 				{tasks.length > 0 &&
 					tasks.map((task) => {
+						if (isEdit && editId == task.id) {
+							console.log("Loader aana chahiye", loading);
+						}
 						return !(isEdit && editId == task.id) ? (
 							<TaskCard
 								task={task}
@@ -153,7 +167,7 @@ export default function TaskList() {
 						) : (
 							<GridLoader
 								color="#0328fa"
-								loading={loading}
+								loading={isEdit}
 								cssOverride={override}
 								size={20}
 								aria-label="Loading Spinner"
@@ -163,7 +177,17 @@ export default function TaskList() {
 					})}
 				<div>
 					<div className="task-list-add-task-icon">
-						<IoAddCircleOutline onClick={handleOpen} />
+						{
+							isEdit && editId == null ?
+								<GridLoader
+									color="#0328fa"
+									loading={isEdit}
+									cssOverride={override}
+									size={20}
+									aria-label="Loading Spinner"
+									data-testid="loader"
+								/> : <IoAddCircleOutline onClick={handleOpen} />
+						}
 					</div>
 				</div>
 			</div>
