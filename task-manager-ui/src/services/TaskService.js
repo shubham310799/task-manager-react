@@ -1,6 +1,6 @@
 import { getToken } from "./UserService";
 
-const BASE_URL = "https://localhost:7131/api/task";
+const BASE_URL = process.env.REACT_APP_API_BASE_URL + "/task";
 
 export const getTasks = async () => {
     const token = await getToken();

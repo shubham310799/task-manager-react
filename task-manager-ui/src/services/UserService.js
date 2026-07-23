@@ -1,5 +1,5 @@
 const TOKEN_KEY = "jwt_token";
-const BASE_URL = "https://localhost:7131/api/user";
+const BASE_URL = process.env.REACT_APP_API_BASE_URL + "/user";
 export const getToken = () => {
     const token = localStorage.getItem(TOKEN_KEY);
 

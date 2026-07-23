@@ -37,6 +37,21 @@ builder.Services.AddHttpContextAccessor();
 
 var app = builder.Build();
 
+if (args.Contains("migrate"))
+{
+    using var scope = app.Services.CreateScope();
+
+    var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+
+    Console.WriteLine("Applying database migrations...");
+
+    db.Database.Migrate();
+
+    Console.WriteLine("Migration completed.");
+
+    return;
+}
+
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {

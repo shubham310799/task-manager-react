@@ -9,6 +9,7 @@ import TabList from "@mui/lab/TabList";
 import TabPanel from "@mui/lab/TabPanel";
 import { GridLoader } from "react-spinners";
 import { getTasks, addTask, updateTask, deleteTask } from "../services/TaskService";
+import StickyStackTabs from "./StickyTabs";
 
 export default function TaskList() {
 	const [taskList, setTaskList] = useState([]);
@@ -191,6 +192,7 @@ export default function TaskList() {
 					</div>
 				</div>
 			</div>
+			{/* <StickyStackTabs></StickyStackTabs> */}
 		</>
 	) : (
 		<GridLoader

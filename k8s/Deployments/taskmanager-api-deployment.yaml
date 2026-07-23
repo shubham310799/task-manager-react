@@ -1,0 +1,24 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: taskmanager-api-deployment
+  labels:
+    app: taskmanager-api
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: taskmanager-api
+  template:
+    metadata:
+      labels:
+        app: taskmanager-api
+    spec:
+      containers:
+        - name: taskmanager-api
+          image: shubham310799/taskmanager-api
+          ports:
+            - containerPort: 8080
+          env:
+            - name: ConnectionStrings__DefaultConnection
+              value: "Server=sqlserver-service;Database=TaskManager;User Id=sa;Password=Password@123;TrustServerCertificate=True;"

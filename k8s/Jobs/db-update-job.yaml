@@ -1,0 +1,18 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: db-update-job
+spec:
+  template:
+    spec:
+      restartPolicy: Never
+      containers:
+        - name: db-update
+          image: shubham310799/taskmanager-api
+          command:
+            - dotnet
+            - TaskManagerAPI.dll
+            - migrate
+          env:
+            - name: ConnectionStrings__Default
+              value: "Server=sqlserver-service;Database=TaskManager;User Id=sa;Password=YourStrong@Passw0rd;TrustServerCertificate=True;"
